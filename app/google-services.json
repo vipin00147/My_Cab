@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "451635352809",
+    "project_id": "fragmenttravel",
+    "storage_bucket": "fragmenttravel.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:451635352809:android:24c3f613832e9d31430c78",
+        "android_client_info": {
+          "package_name": "com.example.fragmenttravel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "451635352809-p2mfsebeup4mf7l58sre8k217h0ihtgl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSlXTN9K3o1O6mVTAa-Zge0W_zyRKXwG4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "451635352809-p2mfsebeup4mf7l58sre8k217h0ihtgl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
