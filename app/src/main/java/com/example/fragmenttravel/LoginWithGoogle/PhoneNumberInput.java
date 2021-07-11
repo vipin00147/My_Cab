@@ -1,4 +1,4 @@
-package com.example.fragmenttravel;
+package com.example.fragmenttravel.LoginWithGoogle;
 
 import android.app.PendingIntent;
 import android.content.Intent;
@@ -6,14 +6,12 @@ import android.content.IntentSender;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,37 +19,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.fragmenttravel.R;
+import com.example.fragmenttravel.SplashScreen;
 import com.google.android.gms.auth.api.credentials.Credential;
 import com.google.android.gms.auth.api.credentials.Credentials;
 import com.google.android.gms.auth.api.credentials.CredentialsApi;
 import com.google.android.gms.auth.api.credentials.HintRequest;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.material.button.MaterialButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.FirebaseTooManyRequestsException;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
-import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
-import com.rilixtech.widget.countrycodepicker.Country;
 import com.rilixtech.widget.countrycodepicker.CountryCodePicker;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.security.auth.callback.Callback;
+import cn.pedant.SweetAlert.SweetAlertDialog;
 
 import static android.app.Activity.RESULT_OK;
-import static com.google.android.gms.tasks.TaskExecutors.*;
 
-public class LoginWithPhone extends Fragment {
+public class PhoneNumberInput extends Fragment {
 
     private TextView errorMessage;
     private EditText phoneNumber;
@@ -64,14 +50,15 @@ public class LoginWithPhone extends Fragment {
     private static final int CREDENTIAL_PICKER_REQUEST =120 ;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_phone_number_input, container, false);
 
         getPhone();
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_login_with_phone, container, false);
+
         backButton = view.findViewById(R.id.back);
         ccp = view.findViewById(R.id.ccp);
         phoneNumber = view.findViewById(R.id.phone_number_edt);
@@ -167,7 +154,7 @@ public class LoginWithPhone extends Fragment {
 
         PhoneAuthProvider.getInstance().verifyPhoneNumber(number,
                 60
-                ,TimeUnit.SECONDS,
+                , TimeUnit.SECONDS,
                 this.getActivity()
                 ,mCallBack);
     }
@@ -185,16 +172,20 @@ public class LoginWithPhone extends Fragment {
             //when we recieve the OTP it contains a unique id wich we are storing in our string which we have already created.
             verificationId = s;
 
+            Bundle b1 = getArguments();
+
             Bundle bundle = new Bundle();
-            bundle.putString("mobile",ccp.getSelectedCountryCodeWithPlus()+phoneNumber.getText());
+            bundle.putString("phone",phoneNumber.getText().toString());
             bundle.putString("otp",otp);
+            bundle.putString("email",b1.getString("email"));
+            bundle.putString("name",b1.getString("name"));
             bundle.putString("verificationId",verificationId);
+            bundle.putString("idToken", b1.getString("idToken"));
 
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
             EnterOtp fragment = new EnterOtp();
             fragment.setArguments(bundle);
             transaction.replace(R.id.mainContainer, fragment);
-            transaction.addToBackStack(null);
             transaction.commit();
         }
 
@@ -214,9 +205,11 @@ public class LoginWithPhone extends Fragment {
         @Override
         public void onVerificationFailed(FirebaseException e) {
             //displaying error message with firebase exception.
-            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+            SweetAlertDialog dialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE);
+            dialog.setTitleText("Oops...").setContentText(e.getMessage());
+            dialog.setCancelable(true);
+            dialog.show();
         }
     };
-
 
 }

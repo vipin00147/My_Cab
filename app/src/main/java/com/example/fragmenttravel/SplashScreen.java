@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.fragmenttravel.LoginWithGoogle.PhoneNumberInput;
+import com.example.fragmenttravel.LoginWithPhone.LoginWithPhone;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -27,6 +29,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import cn.pedant.SweetAlert.SweetAlertDialog;
+
 public class SplashScreen extends Fragment {
 
     private MaterialButton phoneLogin, fbLogin, googleLogin;
@@ -38,13 +42,17 @@ public class SplashScreen extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        mAuth = FirebaseAuth.getInstance();
+
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_splash_screen, container, false);
+
         phoneLogin = view.findViewById(R.id.phoneLogin);
         fbLogin = view.findViewById(R.id.fbLogin);
         googleLogin = view.findViewById(R.id.googleLogin);
 
-        mAuth = FirebaseAuth.getInstance();
+
 
         phoneLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +60,6 @@ public class SplashScreen extends Fragment {
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
                 LoginWithPhone fragment = new LoginWithPhone();
                 transaction.replace(R.id.mainContainer, fragment);
-                transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
@@ -85,14 +92,36 @@ public class SplashScreen extends Fragment {
             // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
             if (requestCode == RC_SIGN_IN) {
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+                com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount x = new com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount();
+                x.setTask(task);
+
+
                 try {
                     // Google Sign In was successful, authenticate with Firebase
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     Log.d("onActivityResult", "firebaseAuthWithGoogle:" + account.getId());
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("email",account.getEmail());
+                    bundle.putString("name",account.getDisplayName());
+                    bundle.putString("idToken",account.getIdToken());
+
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    PhoneNumberInput fragment = new PhoneNumberInput();
+                    fragment.setArguments(bundle);
+                    transaction.replace(R.id.mainContainer, fragment);
+                    transaction.commit();
+
+                    com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount obj = new com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount();
+                    obj.setIdToken(account.getIdToken());
                     firebaseAuthWithGoogle(account.getIdToken());
                 } catch (ApiException e) {
                     // Google Sign In failed, update UI appropriately
                     Log.w("onActivityResult", "Google sign in failed", e);
+                    SweetAlertDialog dialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE);
+                    dialog.setCancelable(true);
+                    dialog.setTitleText("Oops...").setContentText(e.getMessage());
+                    dialog.show();
                 }
             }
     }
@@ -102,6 +131,17 @@ public class SplashScreen extends Fragment {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        try{
+            if(currentUser != null){
+                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
+                HomeFragment fragment = new HomeFragment();
+                transaction.replace(R.id.mainContainer, fragment);
+                transaction.commit();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
 
     }
 
@@ -115,9 +155,14 @@ public class SplashScreen extends Fragment {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("firebaseAuthWithGoogle", "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w("firebaseAuthWithGoogle", "signInWithCredential:failure", task.getException());
+                            SweetAlertDialog dialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE);
+                            dialog.setCancelable(true);
+                            dialog.setTitleText("Oops...").setContentText(task.getException().getMessage());
+                            dialog.show();
                         }
                     }
                 });

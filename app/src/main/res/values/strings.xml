@@ -7,6 +7,6 @@
     <string name="error">Enter your mobile number</string>
     <string name="PleaseWait">Please wait.<br>We will auto verify</br><br> the OTP sent to</br><br></br> </string>
     <string name="privacy">By continuing, you agree that you have read and accept our <a href="https://oneway.cab/Terms-And-Conditions.html">T&amp;C</a> and <a href="http://www.taxitaxiofraleigh.com/privacy-policy/">Privacy Policy</a>.</string>
-    <string name="text">This number will be used for all ride-related communication. ou shall receive an SMS with code for verification.</string>
+    <string name="text">This number will be used for all ride-related communication. you shall receive an SMS with code for verification.</string>
 
 </resources>

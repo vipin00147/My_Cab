@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginWithPhone.LoginWithPhone">
+    tools:context=".LoginWithGoogle.PhoneNumberInput">
 
 
     <com.google.android.material.button.MaterialButton
@@ -31,7 +31,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Enter Phone number for verification"
+            android:text="Almost done! Enter mobile number to continue"
             android:textColor="@color/black"
             android:textSize="30sp"
             android:textStyle="bold" />
@@ -40,7 +40,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="@string/text"
+            android:text="We will send you an OTP for verification"
             android:textSize="18sp" />
 
     </LinearLayout>

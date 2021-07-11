@@ -1,71 +1,82 @@
-package com.example.fragmenttravel;
+package com.example.fragmenttravel.LoginWithGoogle;
 
-
+import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.Manifest;
-import android.widget.Toast;
+
 import com.example.fragmenttravel.BroadcastReceiver.OTP_Receiver;
+import com.example.fragmenttravel.HomeFragment;
+import com.example.fragmenttravel.LoginWithPhone.LoginWithPhone;
+import com.example.fragmenttravel.R;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import in.aabhasjindal.otptextview.OtpTextView;
 
-public class EnterOtp extends Fragment {
 
+public class EnterOtp extends Fragment {
 
     private MaterialButton back, verify;
     public OtpTextView otp;
     private TextView textView;
-    private String generatedOtp, verificationId;
+    private String  verificationId;
 
 
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
+    private FirebaseAuth mAuth;
+    private Bundle bundle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_enter_otp, container, false);
-        back = view.findViewById(R.id.back);
-        otp = view.findViewById(R.id.otp_view);
-        textView = view.findViewById(R.id.textView2);
-        verify = view.findViewById(R.id.verify);
+        View view = inflater.inflate(R.layout.fragment_enter_otp2, container, false);
 
-        Bundle bundle = this.getArguments();
+        mAuth = FirebaseAuth.getInstance();
+
+        back = view.findViewById(R.id.back);
+        otp = view.findViewById(R.id.google_otp_view);
+        textView = view.findViewById(R.id.phoneNumber);
+        verify = view.findViewById(R.id.googleVerify);
+
+        bundle = getArguments();
 
         if (bundle != null) {
-            textView.setText(bundle.getString("mobile"));
+            textView.setText(bundle.getString("phone"));
             verificationId = bundle.getString("verificationId");
             if(otp.getOTP() != null && otp.getOTP().length() == 6){
                 verifyCode(otp.getOTP());
             }
         }
 
-
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
-                LoginWithPhone fragment = new LoginWithPhone();
+                PhoneNumberInput fragment = new PhoneNumberInput();
                 transaction.replace(R.id.mainContainer, fragment);
                 transaction.commit();
             }
@@ -85,7 +96,6 @@ public class EnterOtp extends Fragment {
         new OTP_Receiver().setOtp(otp);
 
         return view;
-
     }
 
     private void requestSmsPermission() {
@@ -103,25 +113,26 @@ public class EnterOtp extends Fragment {
         }
     }
 
-    private void signInWithCredential(PhoneAuthCredential credential) {
-        //inside this method we are checking if the code entered is correct or not.
-        mAuth.signInWithCredential(credential)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            //if the code is correct and the task is succesful we are sending our user to new activity.
+    private void signInWithCredential() {
+        Bundle b1 = getArguments();
 
-                            /*Intent i =new Intent(MainActivity.this,HomeActivity.class);
-                            startActivity(i);
-                            finish();*/
+        Log.d("firebaseAuthWithGoogle", "signInWithCredential:success");
+        FirebaseUser user = mAuth.getCurrentUser();
 
-                        } else {
-                            //if the code is not correct then we are displaying an error message to the user.
-                            Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
+        Bundle b2 = new Bundle();
+        b2.putString("email",user.getEmail());
+        b2.putString("name",user.getDisplayName());
+        b2.putString("phone",bundle.getString("phone"));
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        HomeFragment fragment = new HomeFragment();
+        fragment.setArguments(b2);
+        transaction.replace(R.id.mainContainer, fragment);
+        transaction.commit();
+
+    }
+
+    private void firebaseAuthWithGoogle(String idToken) {
     }
 
     private void verifyCode(String code) {
@@ -132,13 +143,15 @@ public class EnterOtp extends Fragment {
             //below line is used for getting getting credentials from our verification id and code.
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
             //after getting credential we are calling sign in method.
-            //signInWithCredential(credential);
+            signInWithCredential();
+            dialog.dismiss();
 
         }
         catch (Exception e){
             dialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
             dialog.setTitleText("Oops...").setContentText(e.getMessage())
-                    .show();
+                    .dismiss();
+            Log.d("missingerror",e.getStackTrace().toString());
         }
     }
 }
