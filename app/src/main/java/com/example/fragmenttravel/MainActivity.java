@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().hide();
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        SplashScreen fragment = new SplashScreen();
+        EnterOtp fragment = new EnterOtp();
         transaction.replace(R.id.mainContainer, fragment);
         transaction.commit();
 

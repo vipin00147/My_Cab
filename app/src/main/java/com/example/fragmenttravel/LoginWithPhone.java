@@ -29,6 +29,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.TaskExecutors;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseException;
@@ -48,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 import javax.security.auth.callback.Callback;
 
 import static android.app.Activity.RESULT_OK;
+import static com.google.android.gms.tasks.TaskExecutors.*;
 
 public class LoginWithPhone extends Fragment {
 
@@ -55,7 +57,9 @@ public class LoginWithPhone extends Fragment {
     private EditText phoneNumber;
     private CountryCodePicker ccp;
     private MaterialButton next, backButton;
-    private FirebaseAuth mAuth;
+
+    String otp;
+    private String verificationId;
 
     private static final int CREDENTIAL_PICKER_REQUEST =120 ;
 
@@ -64,7 +68,6 @@ public class LoginWithPhone extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mAuth = FirebaseAuth.getInstance();
 
         getPhone();
         // Inflate the layout for this fragment
@@ -89,7 +92,7 @@ public class LoginWithPhone extends Fragment {
             @Override
             public void onClick(View v) {
                 if(phoneNumber.getText().toString().trim().length() == 10)
-                    OpenOTPFragment(phoneNumber.getText().toString());
+                    sendVerificationCode(ccp.getSelectedCountryCodeWithPlus()+phoneNumber.getText().toString());
                 else
                     Toast.makeText(getActivity(), "Invalid Number", Toast.LENGTH_SHORT).show();
             }
@@ -147,7 +150,7 @@ public class LoginWithPhone extends Fragment {
             // Obtain the phone number from the result
             Credential credentials = data.getParcelableExtra(Credential.EXTRA_KEY);
             phoneNumber.setText(credentials.getId().substring(3));
-            OpenOTPFragment(phoneNumber.getText().toString());
+            sendVerificationCode(ccp.getSelectedCountryCodeWithPlus()+phoneNumber.getText().toString());
 
 
         }
@@ -156,54 +159,36 @@ public class LoginWithPhone extends Fragment {
             // *** No phone numbers available ***
             Toast.makeText(getActivity(), "No phone numbers found", Toast.LENGTH_LONG).show();
         }
-
-
     }
 
-    PhoneAuthProvider.OnVerificationStateChangedCallbacks mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
+    private void sendVerificationCode(String number) {
+        //this method is used for getting OTP on user phone number.
+
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(number,
+                60
+                ,TimeUnit.SECONDS,
+                this.getActivity()
+                ,mCallBack);
+    }
+
+
+    //callback method is called on Phone auth provider.
+    private PhoneAuthProvider.OnVerificationStateChangedCallbacks
+            //initializing our callbacks for on verification callback method.
+            mCallBack = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+
+        //below method is used when OTP is sent from Firebase
         @Override
-        public void onVerificationCompleted(PhoneAuthCredential credential) {
-            // This callback will be invoked in two situations:
-            // 1 - Instant verification. In some cases the phone number can be instantly
-            //     verified without needing to send or enter a verification code.
-            // 2 - Auto-retrieval. On some devices Google Play services can automatically
-            //     detect the incoming verification SMS and perform verification without
-            //     user action.
-            Log.d("varification", "onVerificationCompleted:" + credential);
-
-
-        }
-
-        @Override
-        public void onVerificationFailed(FirebaseException e) {
-            // This callback is invoked in an invalid request for verification is made,
-            // for instance if the the phone number format is not valid.
-            Log.w("varification", "onVerificationFailed", e);
-
-            if (e instanceof FirebaseAuthInvalidCredentialsException) {
-                // Invalid request
-            } else if (e instanceof FirebaseTooManyRequestsException) {
-                // The SMS quota for the project has been exceeded
-            }
-
-            // Show a message and update the UI
-        }
-
-        @Override
-        public void onCodeSent(@NonNull String verificationId,
-                @NonNull PhoneAuthProvider.ForceResendingToken token) {
-            // The SMS verification code has been sent to the provided phone number, we
-            // now need to ask the user to enter the code and then construct a credential
-            // by combining the code with a verification ID.
-            Log.d("codeSent", "onCodeSent:" + verificationId);
-
-            // Save verification ID and resending token so we can use them later
-            //mVerificationId = verificationId;
-            //mResendToken = token;
+        public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+            super.onCodeSent(s, forceResendingToken);
+            //when we recieve the OTP it contains a unique id wich we are storing in our string which we have already created.
+            verificationId = s;
 
             Bundle bundle = new Bundle();
-            bundle.putString("mobile",ccp.getDefaultCountryCodeWithPlus()+phoneNumber.getText());
+            bundle.putString("mobile",ccp.getSelectedCountryCodeWithPlus()+phoneNumber.getText());
+            bundle.putString("otp",otp);
+            bundle.putString("verificationId",verificationId);
 
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
             EnterOtp fragment = new EnterOtp();
@@ -212,21 +197,26 @@ public class LoginWithPhone extends Fragment {
             transaction.addToBackStack(null);
             transaction.commit();
         }
+
+        //this method is called when user recieve OTP from Firebase.
+        @Override
+        public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
+            //below line is used for getting OTP code which is sent in phone auth credentials.
+            final String code = phoneAuthCredential.getSmsCode();
+            //checking if the code is null or not.
+            if (code != null) {
+                //if the code is not null then we are setting that code to our OTP edittext field.
+                otp = code;
+            }
+        }
+
+        //thid method is called when firebase doesnot sends our OTP code due to any error or issue.
+        @Override
+        public void onVerificationFailed(FirebaseException e) {
+            //displaying error message with firebase exception.
+            Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     };
 
 
-
-
-
-    private void OpenOTPFragment(String mobileNumber) {
-        PhoneAuthOptions options =
-                PhoneAuthOptions.newBuilder(mAuth)
-                        .setPhoneNumber(ccp.getSelectedCountryCodeWithPlus()+mobileNumber)       // Phone number to verify
-                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-                        .setActivity(this.getActivity())                 // Activity (for callback binding)
-                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-                        .build();
-        PhoneAuthProvider.verifyPhoneNumber(options);
-
-    }
 }
