@@ -1,14 +1,12 @@
 package com.example.fragmenttravel;
 
+import android.os.Bundle;
+import android.view.WindowManager;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.os.Bundle;
-import android.view.WindowManager;
-import android.widget.Button;
-
 public class MainActivity extends AppCompatActivity {
-    private Button button;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
         SplashScreen fragment = new SplashScreen();
         transaction.replace(R.id.mainContainer, fragment);
         transaction.commit();
+
 
     }
 }

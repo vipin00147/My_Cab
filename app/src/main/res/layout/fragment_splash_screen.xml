@@ -106,6 +106,7 @@
                 android:textColor="@color/black"
                 app:backgroundTint="@color/white"
                 android:gravity="start|center_vertical" />
+
         </LinearLayout>
         <TextView
             android:layout_marginTop="10dp"

@@ -9,4 +9,7 @@
     <string name="privacy">By continuing, you agree that you have read and accept our <a href="https://oneway.cab/Terms-And-Conditions.html">T&amp;C</a> and <a href="http://www.taxitaxiofraleigh.com/privacy-policy/">Privacy Policy</a>.</string>
     <string name="text">This number will be used for all ride-related communication. you shall receive an SMS with code for verification.</string>
 
+    <string name="facebook_app_id">386071442942104</string>
+    <string name="fb_login_protocol_scheme">fb386071442942104</string>
+
 </resources>

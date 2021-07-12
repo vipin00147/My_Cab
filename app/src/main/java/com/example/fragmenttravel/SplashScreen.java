@@ -3,18 +3,25 @@ package com.example.fragmenttravel;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
+import com.example.fragmenttravel.LoginWithGoogle.OTPModel;
 import com.example.fragmenttravel.LoginWithGoogle.PhoneNumberInput;
 import com.example.fragmenttravel.LoginWithPhone.LoginWithPhone;
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,9 +32,12 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+
+import java.util.Arrays;
 
 import cn.pedant.SweetAlert.SweetAlertDialog;
 
@@ -37,6 +47,7 @@ public class SplashScreen extends Fragment {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 123;
+    private CallbackManager mCallbackManager;
 
 
     @Override
@@ -79,8 +90,62 @@ public class SplashScreen extends Fragment {
             }
         });
 
+        fbLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCallbackManager = CallbackManager.Factory.create();
+                LoginManager.getInstance().logInWithReadPermissions(getActivity(), Arrays.asList("email", "public_profile"));
+                LoginManager.getInstance().registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("loginResult", "facebook:onSuccess:" + loginResult);
+                        Toast.makeText(getContext(), loginResult.toString(), Toast.LENGTH_SHORT).show();
+                        handleFacebookAccessToken(loginResult.getAccessToken());
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d("loginResult", "facebook:onCancel");
+                        // ...
+                    }
+
+                    @Override
+                    public void onError(FacebookException error) {
+                        Log.d("loginResult", "facebook:onError", error);
+                        // ...
+                    }
+                });
+            }
+        });
+
         return view;
     }
+
+    private void handleFacebookAccessToken(AccessToken token) {
+        Toast.makeText(getActivity(), "Token : "+token, Toast.LENGTH_SHORT).show();
+
+        AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Toast.makeText(getActivity(), "Success", Toast.LENGTH_SHORT).show();
+                            FirebaseUser user = mAuth.getCurrentUser();
+                           // updateUI(user);
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Toast.makeText(getActivity(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "Authentication failed.",
+                                    Toast.LENGTH_SHORT).show();
+                           // updateUI(null);
+                        }
+                    }
+                });
+    }
+
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -92,15 +157,11 @@ public class SplashScreen extends Fragment {
             // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
             if (requestCode == RC_SIGN_IN) {
                 Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount x = new com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount();
-                x.setTask(task);
-
 
                 try {
                     // Google Sign In was successful, authenticate with Firebase
                     GoogleSignInAccount account = task.getResult(ApiException.class);
                     Log.d("onActivityResult", "firebaseAuthWithGoogle:" + account.getId());
-
                     Bundle bundle = new Bundle();
                     bundle.putString("email",account.getEmail());
                     bundle.putString("name",account.getDisplayName());
@@ -112,18 +173,14 @@ public class SplashScreen extends Fragment {
                     transaction.replace(R.id.mainContainer, fragment);
                     transaction.commit();
 
-                    com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount obj = new com.example.fragmenttravel.LoginWithGoogle.GoogleSignInAccount();
-                    obj.setIdToken(account.getIdToken());
+
                     firebaseAuthWithGoogle(account.getIdToken());
                 } catch (ApiException e) {
                     // Google Sign In failed, update UI appropriately
-                    Log.w("onActivityResult", "Google sign in failed", e);
-                    SweetAlertDialog dialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE);
-                    dialog.setCancelable(true);
-                    dialog.setTitleText("Oops...").setContentText(e.getMessage());
-                    dialog.show();
+                    Log.d("onActivityResult", "Google sign in failed", e);
                 }
             }
+
     }
 
     @Override
@@ -133,10 +190,17 @@ public class SplashScreen extends Fragment {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         try{
             if(currentUser != null){
-                FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
-                HomeFragment fragment = new HomeFragment();
-                transaction.replace(R.id.mainContainer, fragment);
-                transaction.commit();
+                if(OTPModel.getOTPFilled() == 1) {
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
+                    HomeFragment fragment = new HomeFragment();
+                    transaction.replace(R.id.mainContainer, fragment);
+                    transaction.commit();
+                }
+                else{
+
+                    FirebaseUser user = mAuth.getCurrentUser();
+                    user.delete();
+                }
             }
         }
         catch (Exception e){
