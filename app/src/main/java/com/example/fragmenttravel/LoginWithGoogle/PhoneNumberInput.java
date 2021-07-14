@@ -5,11 +5,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -18,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fragmenttravel.R;
 import com.example.fragmenttravel.SplashScreen;
@@ -49,6 +48,9 @@ public class PhoneNumberInput extends Fragment {
 
     private static final int CREDENTIAL_PICKER_REQUEST =120 ;
 
+    private SweetAlertDialog progressDialog;
+
+
     @RequiresApi(api = Build.VERSION_CODES.O)
 
     @Override
@@ -56,6 +58,9 @@ public class PhoneNumberInput extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_phone_number_input, container, false);
+
+        progressDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+        progressDialog.setCancelable(false);
 
         getPhone();
 
@@ -107,6 +112,9 @@ public class PhoneNumberInput extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if(s.length() == 10) {
+                    progressDialog.show();
+                }
             }
         });
 
@@ -124,6 +132,7 @@ public class PhoneNumberInput extends Fragment {
         }
         catch (IntentSender.SendIntentException e)
         {
+            new SweetAlertDialog(getContext(),SweetAlertDialog.PROGRESS_TYPE).dismiss();
             e.printStackTrace();
         }
     }
@@ -137,8 +146,8 @@ public class PhoneNumberInput extends Fragment {
             // Obtain the phone number from the result
             Credential credentials = data.getParcelableExtra(Credential.EXTRA_KEY);
             phoneNumber.setText(credentials.getId().substring(3));
-            sendVerificationCode(ccp.getSelectedCountryCodeWithPlus()+phoneNumber.getText().toString());
 
+            sendVerificationCode(ccp.getSelectedCountryCodeWithPlus()+phoneNumber.getText().toString());
 
         }
         else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE)
@@ -181,6 +190,8 @@ public class PhoneNumberInput extends Fragment {
             bundle.putString("name",b1.getString("name"));
             bundle.putString("verificationId",verificationId);
             bundle.putString("idToken", b1.getString("idToken"));
+
+            progressDialog.dismiss();
 
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
             EnterOtp fragment = new EnterOtp();

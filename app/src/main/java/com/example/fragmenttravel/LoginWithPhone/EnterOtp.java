@@ -1,22 +1,24 @@
 package com.example.fragmenttravel.LoginWithPhone;
 
 
+import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.Manifest;
 
 import com.example.fragmenttravel.BroadcastReceiver.OTP_Receiver;
-import com.example.fragmenttravel.HomeFragment;
-import com.example.fragmenttravel.LoginWithPhone.LoginWithPhone;
+import com.example.fragmenttravel.Home;
+import com.example.fragmenttravel.OTPModel;
 import com.example.fragmenttravel.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -119,11 +121,17 @@ public class EnterOtp extends Fragment {
                             Bundle b1 = new Bundle();
                             b1.putString("phone",mobile);
 
-                            FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                            OTPModel.setOTPFilled(1);
+
+                           /* FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
                             HomeFragment fragment = new HomeFragment();
                             fragment.setArguments(b1);
                             transaction.replace(R.id.mainContainer, fragment);
                             transaction.commit();
+                           */
+                            Intent intent = new Intent(getActivity(), Home.class);
+                            intent.putExtras(b1);
+                            startActivity(intent);
 
                         } else {
                             SweetAlertDialog dialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE);

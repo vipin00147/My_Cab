@@ -9,7 +9,7 @@ public class OTPModel {
     }
 
     public static void setOTPFilled(int OTPFilled) {
-        com.example.fragmenttravel.LoginWithGoogle.OTPModel.OTPFilled = OTPFilled;
+        com.example.fragmenttravel.OTPModel.OTPFilled = OTPFilled;
     }
 
 }

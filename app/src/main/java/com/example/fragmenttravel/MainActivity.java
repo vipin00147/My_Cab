@@ -21,6 +21,5 @@ public class MainActivity extends AppCompatActivity {
         transaction.replace(R.id.mainContainer, fragment);
         transaction.commit();
 
-
     }
 }

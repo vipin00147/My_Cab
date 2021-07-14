@@ -1,4 +1,4 @@
-package com.example.fragmenttravel.LoginWithGoogle;
+package com.example.fragmenttravel;
 
 public class OTPModel {
 

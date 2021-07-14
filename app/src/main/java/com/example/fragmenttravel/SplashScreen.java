@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.example.fragmenttravel.LoginWithGoogle.OTPModel;
 import com.example.fragmenttravel.LoginWithGoogle.PhoneNumberInput;
 import com.example.fragmenttravel.LoginWithPhone.LoginWithPhone;
 import com.facebook.AccessToken;
@@ -191,10 +190,8 @@ public class SplashScreen extends Fragment {
         try{
             if(currentUser != null){
                 if(OTPModel.getOTPFilled() == 1) {
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
-                    HomeFragment fragment = new HomeFragment();
-                    transaction.replace(R.id.mainContainer, fragment);
-                    transaction.commit();
+                    Intent intent = new Intent(getActivity(), Home.class);
+                    startActivity(intent);
                 }
                 else{
 

@@ -5,10 +5,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.annotation.RequiresApi;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -17,6 +13,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fragmenttravel.R;
 import com.example.fragmenttravel.SplashScreen;
@@ -48,6 +48,8 @@ public class LoginWithPhone extends Fragment {
 
     private static final int CREDENTIAL_PICKER_REQUEST =120 ;
 
+    private SweetAlertDialog progressDialog;
+
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +59,10 @@ public class LoginWithPhone extends Fragment {
         getPhone();
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_login_with_phone, container, false);
+
+        progressDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+        progressDialog.setCancelable(false);
+
         backButton = view.findViewById(R.id.back);
         ccp = view.findViewById(R.id.ccp);
         phoneNumber = view.findViewById(R.id.phone_number_edt);
@@ -105,6 +111,9 @@ public class LoginWithPhone extends Fragment {
 
             @Override
             public void afterTextChanged(Editable s) {
+                if(s.length() == 10) {
+                    progressDialog.show();
+                }
             }
         });
 
@@ -174,6 +183,8 @@ public class LoginWithPhone extends Fragment {
             bundle.putString("mobile",phoneNumber.getText().toString());
             bundle.putString("otp",otp);
             bundle.putString("verificationId",verificationId);
+
+            progressDialog.dismiss();
 
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
             EnterOtp fragment = new EnterOtp();
