@@ -21,7 +21,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FragmentTravel"
         tools:replace="android:icon">
-        <activity android:name=".Home"
+        <activity android:name=".MainActivity"
             android:noHistory="true"/>
 
         <receiver android:name=".BroadcastReceiver.OTP_Receiver">
@@ -30,7 +30,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

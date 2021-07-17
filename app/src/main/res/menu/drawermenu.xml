@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/your_rides"
+        android:title="Your Rides"
+        android:icon="@drawable/your_rides" />
+
+    <item android:id="@+id/drive_booking"
+        android:title="Drive Booking"
+        android:icon="@drawable/drive_bookings"/>
+
+    <item android:id="@+id/payments"
+        android:title="Payments"
+        android:icon="@drawable/payments"/>
+
+    <item android:id="@+id/ola_money"
+        android:title="My Cab Money"
+        android:icon="@drawable/my_cab_money"/>
+
+    <item android:id="@+id/insurance"
+        android:title="Insurance"
+        android:icon="@drawable/insurance"/>
+
+    <item android:id="@+id/referandearn"
+        android:title="Refer &amp; Earn"
+        android:icon="@drawable/refer_and_earn"/>
+
+    <item android:id="@+id/support"
+        android:title="Support"
+        android:icon="@drawable/support"/>
+
+    <item android:id="@+id/joinolaselect"
+        android:title="Join My Cab Select"
+        android:icon="@drawable/join_ola_select"/>
+
+    <item android:id="@+id/about"
+        android:title="About"
+        android:icon="@drawable/about"/>
+</menu>

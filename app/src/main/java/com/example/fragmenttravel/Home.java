@@ -6,9 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,7 +17,6 @@ import androidx.core.content.ContextCompat;
 public class Home extends AppCompatActivity {
 
     public static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
-    Button start,stop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,31 +27,17 @@ public class Home extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
-        start = findViewById(R.id.button2);
-        stop = findViewById(R.id.button3);
 
-
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(Home.this, new String[]{
-                                    Manifest.permission.ACCESS_FINE_LOCATION,
-                            },REQUEST_CODE_LOCATION_PERMISSION
-                    );
-                }
-                else {
-                    startLocationService();
-                }
-            }
-        });
-        stop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopLocationService();
-            }
-        });
+        if(ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(Home.this, new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                    },REQUEST_CODE_LOCATION_PERMISSION
+            );
+        }
+        else {
+            startLocationService();
+        }
     }
 
 
