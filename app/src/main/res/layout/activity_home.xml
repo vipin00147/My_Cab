@@ -23,37 +23,75 @@
         android:layout_height="match_parent">
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            android:layout_margin="10dp"
             app:cardCornerRadius="10dp"
             app:cardElevation="10dp"
-            android:layout_margin="10dp">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
-                android:drawableLeft="@drawable/ic_menu"/>
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:textAllCaps="false"
-                android:text="📍 Your Current Location"
-                android:layout_gravity="center_horizontal"
-                android:textColor="@color/black"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog" />
-            <com.google.android.material.button.MaterialButton
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
-                android:drawableRight="@drawable/ic_favorite"/>
-        </LinearLayout>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/open_drawer"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:drawableLeft="@drawable/ic_menu" />
+
+                <com.google.android.material.button.MaterialButton
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_horizontal"
+                    android:text="📍 Your Current Location"
+                    android:textAllCaps="false"
+                    android:textColor="@color/black" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/add_fav"
+                    style="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:drawableRight="@drawable/ic_favorite" />
+            </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+        <TextView
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/name" />
+
+        <TextView
+            android:id="@+id/email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/phone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

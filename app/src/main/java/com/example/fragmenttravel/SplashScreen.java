@@ -189,9 +189,15 @@ public class SplashScreen extends Fragment {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         try{
             if(currentUser != null){
-                if(OTPModel.getOTPFilled() == 1) {
+                if(OTPModel.getOTPFilled() == 1 && OTPModel.getPermissionAllowed() == 1) {
                     Intent intent = new Intent(getActivity(), Home.class);
                     startActivity(intent);
+                }
+                else if(currentUser != null && OTPModel.getPermissionAllowed() == 0) {
+                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+                    Welcome fragment = new Welcome();
+                    transaction.replace(R.id.mainContainer, fragment);
+                    transaction.commit();
                 }
                 else{
 

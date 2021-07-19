@@ -1,7 +1,8 @@
 package com.example.fragmenttravel.LoginWithGoogle;
 
 import android.Manifest;
-import android.content.Intent;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,9 +17,9 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.fragmenttravel.BroadcastReceiver.OTP_Receiver;
-import com.example.fragmenttravel.Home;
 import com.example.fragmenttravel.OTPModel;
 import com.example.fragmenttravel.R;
+import com.example.fragmenttravel.Welcome;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -117,17 +118,18 @@ public class EnterOtp extends Fragment {
 
         OTPModel.setOTPFilled(1);
 
-        /*FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        HomeFragment fragment = new HomeFragment();
+        SharedPreferences save = getActivity().getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        SharedPreferences.Editor ed = save.edit();
+        ed.putString("phone", b2.getString("phone"));
+        ed.putString("name", b2.getString("name"));
+        ed.putString("email", b2.getString("email"));
+        ed.commit();
+
+        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
+        Welcome fragment = new Welcome();
         fragment.setArguments(b2);
         transaction.replace(R.id.mainContainer, fragment);
         transaction.commit();
-        */
-
-
-        Intent intent = new Intent(getActivity(), Home.class);
-        intent.putExtras(b2);
-        startActivity(intent);
 
     }
 
