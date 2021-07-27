@@ -2,6 +2,7 @@ package com.example.fragmenttravel.Controller.LoginWithGoogle;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -19,7 +20,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.example.fragmenttravel.Controller.BroadcastReceiver.OTP_Receiver;
 import com.example.fragmenttravel.Model.OTPModel;
 import com.example.fragmenttravel.R;
-import com.example.fragmenttravel.View.Welcome;
+import com.example.fragmenttravel.View.Welcome_;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -125,11 +126,9 @@ public class EnterOtp extends Fragment {
         ed.putString("email", b2.getString("email"));
         ed.commit();
 
-        FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-        Welcome fragment = new Welcome();
-        fragment.setArguments(b2);
-        transaction.replace(R.id.mainContainer, fragment);
-        transaction.commit();
+        Intent intent = new Intent(getActivity(), Welcome_.class);
+        intent.putExtras(b2);
+        startActivity(intent);
 
     }
 

@@ -66,7 +66,8 @@ public class LocationService extends Service {
         builder.setDefaults(NotificationCompat.DEFAULT_ALL);
         builder.setContentText("Running");
         builder.setContentIntent(pendingIntent);
-        builder.setAutoCancel(false);
+        builder.setAutoCancel(true);
+        builder.setVisibility(NotificationCompat.VISIBILITY_SECRET);
         builder.setPriority(NotificationCompat.PRIORITY_MAX);
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
@@ -115,5 +116,4 @@ public class LocationService extends Service {
         }
         return super.onStartCommand(intent, flags, startId);
     }
-
 }

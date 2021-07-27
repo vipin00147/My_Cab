@@ -196,10 +196,8 @@ public class SplashScreen extends Fragment {
                     startActivity(intent);
                 }
                 else if(currentUser != null && OTPModel.getPermissionAllowed() == 0) {
-                    FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                    Welcome fragment = new Welcome();
-                    transaction.replace(R.id.mainContainer, fragment);
-                    transaction.commit();
+                    Intent intent = new Intent(getActivity(), Welcome_.class);
+                    startActivity(intent);
                 }
                 else{
 

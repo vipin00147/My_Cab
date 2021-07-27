@@ -12,24 +12,28 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:hardwareAccelerated="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.FragmentTravel"
         tools:replace="android:icon">
+        <activity android:name=".View.Welcome_"></activity>
 
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="@string/map_key"/>
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/map_key" />
 
-        <activity android:name=".View.MainActivity"
-            android:noHistory="true"/>
+        <activity
+            android:name=".View.Home"
+            android:noHistory="true" />
 
         <receiver android:name=".Controller.BroadcastReceiver.OTP_Receiver">
             <intent-filter>
@@ -37,7 +41,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".View.Home">
+        <activity android:name=".View.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
