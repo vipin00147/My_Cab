@@ -25,7 +25,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FragmentTravel"
         tools:replace="android:icon">
-        <activity android:name=".View.Welcome_"></activity>
+        <activity android:name=".View.Permission_Error_Activity"></activity>
+        <activity android:name=".View.Welcome_" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

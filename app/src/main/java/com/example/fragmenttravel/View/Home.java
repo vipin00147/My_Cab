@@ -16,14 +16,12 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-
 import com.example.fragmenttravel.Model.Constants;
 import com.example.fragmenttravel.Model.LocationService;
 import com.example.fragmenttravel.Model.UserCurrentLocation;
@@ -48,7 +46,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.util.Collections;
 
 public class Home extends AppCompatActivity implements OnMapReadyCallback {
@@ -168,7 +165,6 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
     public void onBackPressed() {
         Intent a = new Intent(Intent.ACTION_MAIN);
         a.addCategory(Intent.CATEGORY_HOME);
-        //fAuth.signOut();
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(a);
     }
@@ -212,6 +208,8 @@ public class Home extends AppCompatActivity implements OnMapReadyCallback {
             }
         });
     }
+
+    //Changing Google Map Marker Style......
     private BitmapDescriptor BitmapFromVector(Context context, int vectorResId) {
         Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
 

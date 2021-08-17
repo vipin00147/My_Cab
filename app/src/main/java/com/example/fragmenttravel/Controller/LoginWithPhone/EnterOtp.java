@@ -44,12 +44,18 @@ public class EnterOtp extends Fragment {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
+    private SweetAlertDialog progressDialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_enter_otp, container, false);
+
+        progressDialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
+        progressDialog.setCancelable(false);
+
         back = view.findViewById(R.id.back);
         otp = view.findViewById(R.id.otp_view);
         textView = view.findViewById(R.id.textView2);
@@ -67,7 +73,6 @@ public class EnterOtp extends Fragment {
             }
         }
 
-
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,9 +86,15 @@ public class EnterOtp extends Fragment {
         verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                progressDialog.show();
+
                 String code = otp.getOTP();
                 if(code != null){
                     verifyCode(code);
+                }
+                else{
+                    progressDialog.dismiss();
                 }
             }
         });
@@ -128,44 +139,34 @@ public class EnterOtp extends Fragment {
                             ed.putString("phone", b1.getString("phone"));
                             ed.commit();
 
-
-                            /*FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction();
-                            Welcome fragment = new Welcome();
-                            fragment.setArguments(b1);
-                            transaction.replace(R.id.mainContainer, fragment);
-                            transaction.commit();
-
-                             */
-
                             Intent intent = new Intent(getActivity(), Welcome_.class);
                             intent.putExtras(b1);
                             startActivity(intent);
 
+                            progressDialog.dismiss();
+
                         } else {
-                            SweetAlertDialog dialog = new SweetAlertDialog(getActivity(), SweetAlertDialog.ERROR_TYPE);
-                            dialog.setCancelable(true);
-                            dialog.setTitleText("Oops...").setContentText(task.getException().getMessage());
-                            dialog.show();
+                            progressDialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
+                            progressDialog.setCancelable(true);
+                            progressDialog.setTitleText("Oops...").setContentText(task.getException().getMessage());
+                            progressDialog.show();
                         }
                     }
                 });
     }
 
     private void verifyCode(String code) {
-        SweetAlertDialog dialog = new SweetAlertDialog(this.getActivity(), SweetAlertDialog.PROGRESS_TYPE);
-        dialog.setCancelable(true);
-        dialog.show();
+
         try {
             //below line is used for getting getting credentials from our verification id and code.
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
             //after getting credential we are calling sign in method.
             signInWithCredential(credential);
-            dialog.dismiss();
 
         }
         catch (Exception e){
-            dialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
-            dialog.setTitleText("Oops...").setContentText(e.getMessage())
+            progressDialog.changeAlertType(SweetAlertDialog.ERROR_TYPE);
+            progressDialog.setTitleText("Oops...").setContentText(e.getMessage())
                     .dismiss();
         }
     }

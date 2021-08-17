@@ -11,12 +11,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-
 import com.example.fragmenttravel.Controller.BroadcastReceiver.OTP_Receiver;
 import com.example.fragmenttravel.Model.OTPModel;
 import com.example.fragmenttravel.R;
@@ -26,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
-
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import in.aabhasjindal.otptextview.OtpTextView;
 
@@ -42,11 +39,15 @@ public class EnterOtp extends Fragment {
     private FirebaseAuth mAuth;
     private Bundle bundle;
 
+    private SweetAlertDialog dialog;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_enter_otp2, container, false);
+
+        dialog = new SweetAlertDialog(getContext(), SweetAlertDialog.PROGRESS_TYPE);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -78,9 +79,13 @@ public class EnterOtp extends Fragment {
         verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                dialog.show();
                 String code = otp.getOTP();
                 if(code != null){
                     verifyCode(code);
+                }
+                else {
+                    dialog.dismiss();
                 }
             }
         });
@@ -130,21 +135,19 @@ public class EnterOtp extends Fragment {
         intent.putExtras(b2);
         startActivity(intent);
 
+        dialog.dismiss();
+
     }
 
     private void firebaseAuthWithGoogle(String idToken) {
     }
 
     private void verifyCode(String code) {
-        SweetAlertDialog dialog = new SweetAlertDialog(this.getActivity(), SweetAlertDialog.PROGRESS_TYPE);
-        dialog.setCancelable(true);
-        dialog.show();
         try {
             //below line is used for getting getting credentials from our verification id and code.
             PhoneAuthCredential credential = PhoneAuthProvider.getCredential(verificationId, code);
             //after getting credential we are calling sign in method.
             signInWithCredential();
-            dialog.dismiss();
 
         }
         catch (Exception e){

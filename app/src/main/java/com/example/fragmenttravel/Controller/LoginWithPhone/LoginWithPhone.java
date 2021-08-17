@@ -166,7 +166,6 @@ public class LoginWithPhone extends Fragment {
                 ,mCallBack);
     }
 
-
     //callback method is called on Phone auth provider.
     private PhoneAuthProvider.OnVerificationStateChangedCallbacks
             //initializing our callbacks for on verification callback method.
@@ -183,7 +182,6 @@ public class LoginWithPhone extends Fragment {
             bundle.putString("mobile",phoneNumber.getText().toString());
             bundle.putString("otp",otp);
             bundle.putString("verificationId",verificationId);
-
             progressDialog.dismiss();
 
             FragmentTransaction transaction = getActivity().getSupportFragmentManager().beginTransaction().setCustomAnimations(R.anim.slide_in, R.anim.fade_out);
@@ -215,6 +213,4 @@ public class LoginWithPhone extends Fragment {
             dialog.show();
         }
     };
-
-
 }

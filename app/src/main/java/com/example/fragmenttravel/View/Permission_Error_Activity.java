@@ -4,13 +4,11 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,57 +17,57 @@ import androidx.core.content.ContextCompat;
 
 import com.example.fragmenttravel.Model.Constants;
 import com.example.fragmenttravel.Model.LocationService;
-import com.example.fragmenttravel.Model.OTPModel;
 import com.example.fragmenttravel.R;
 import com.google.android.material.button.MaterialButton;
 
-public class Welcome_ extends AppCompatActivity {
+public class Permission_Error_Activity extends AppCompatActivity {
 
     private MaterialButton allow;
-    private Bundle b1;
 
     private static final int REQUEST_CODE = 123;
+
+    private Bundle b1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome_);
+        setContentView(R.layout.activity_permission__error_);
+
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
 
         b1 = new Bundle();
 
-        SharedPreferences sh = getSharedPreferences("MyData", Context.MODE_PRIVATE);
+        allow = findViewById(R.id.materialButton);
 
-        String phone = sh.getString("phone", "");
-        String name =  sh.getString("name", "");
-        String email =  sh.getString("email", "");
+        b1 = getIntent().getExtras();
 
-        try {
-            allow = findViewById(R.id.allowpermission);
-            Intent intent = getIntent();
-            b1 = intent.getExtras();//we have to  use intent here...
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
-        if(b1 == null){
-            b1 = new Bundle();
-            b1.putString("phone",phone);
-            b1.putString("name",name);
-            b1.putString("email",email);
-        }
-
+        //Getting Permissions from user...
         allow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OTPModel.setPermissionAllowed(1);
                 CheckSelfPermissions();
             }
         });
     }
+
+    private void CheckSelfPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION) +
+                ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.READ_PHONE_STATE
+                    }, REQUEST_CODE
+            );
+
+        } else {
+            startLocationService();
+        }
+    }
+
     private void startLocationService() {
         if (!isLocationServiceRunning()) {
             Intent intent = new Intent(this, LocationService.class);
@@ -86,28 +84,19 @@ public class Welcome_ extends AppCompatActivity {
         startActivity(intent1);
     }
 
-    private void CheckSelfPermissions() {
-        if (ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION) +
-                ContextCompat.checkSelfPermission(getApplicationContext(),
-                        Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.READ_PHONE_STATE
-                    }, REQUEST_CODE
-            );
-        } else {
-            startLocationService();
+    private boolean isLocationServiceRunning() {
+        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        if (activityManager != null) {
+            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+                if (LocationService.class.getName().equals(service.service.getClassName())) {
+                    if (service.foreground) {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
-    }
-
-    private void stopLocationService() {
-        if (isLocationServiceRunning()) {
-            Intent intent = new Intent(this, LocationService.class);
-            intent.setAction(Constants.ACTION_STOP_LOCATION_SERVICE);
-            this.startService(intent);
-            Toast.makeText(this, "Location Service Stopped", Toast.LENGTH_SHORT).show();
-        }
+        return false;
     }
 
     @Override
@@ -125,20 +114,5 @@ public class Welcome_ extends AppCompatActivity {
                 startActivity(intent);
             }
         }
-    }
-
-    private boolean isLocationServiceRunning() {
-        ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        if (activityManager != null) {
-            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if (LocationService.class.getName().equals(service.service.getClassName())) {
-                    if (service.foreground) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        return false;
     }
 }
